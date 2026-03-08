@@ -1,14 +1,15 @@
 package edu.itvo.biblioteca
 
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertTrue
+import android.os.Build
+import androidx.annotation.RequiresApi
+import org.junit.Assert.*
 import org.junit.Before
 import org.junit.Test
 
 class SistemaBibliotecaTest {
 
     private lateinit var biblioteca: Biblioteca
-    private lateinit var sistema: SistemaBiblioteca
+    private lateinit var prestamos: Prestamos  // Cambiado de sistema a prestamos
     private lateinit var usuario: Usuario
     private lateinit var libro1: Libro
     private lateinit var libro2: Libro
@@ -18,7 +19,7 @@ class SistemaBibliotecaTest {
     @Before
     fun setUp() {
         biblioteca = Biblioteca()
-        sistema = SistemaBiblioteca(biblioteca)
+        prestamos = Prestamos(biblioteca)  // Cambiado de sistema a prestamos
 
         usuario = Usuario(nombre = "Usuario Test", id = 1)
         libro1 = Libro("Libro 1", "Autor A", "ISBN1")
@@ -32,44 +33,45 @@ class SistemaBibliotecaTest {
 
     @Test
     fun noSePuedePrestarLibroYaPrestado() {
-        sistema.prestarLibro(libro1, usuario)
-        val autorizado = sistema.autorizaPrestamo(usuario.id, libro1.isbn)
+        prestamos.prestarLibro(libro1, usuario)
+        val autorizado = prestamos.autorizaPrestamo(usuario.id, libro1.isbn)
         assertFalse(autorizado)
     }
 
     @Test
     fun usuarioNoPuedeTenerMasDe3LibrosPrestados() {
-        sistema.prestarLibro(libro1, usuario)
-        sistema.prestarLibro(libro2, usuario)
-        sistema.prestarLibro(libro3, usuario)
-        val autorizado = sistema.autorizaPrestamo(usuario.id, libro4.isbn)
+        prestamos.prestarLibro(libro1, usuario)
+        prestamos.prestarLibro(libro2, usuario)
+        prestamos.prestarLibro(libro3, usuario)
+        val autorizado = prestamos.autorizaPrestamo(usuario.id, libro4.isbn)
         assertFalse(autorizado)
     }
 
     @Test
     fun puedePrestarSiUsuarioTieneMenosDe3LibrosYLibroDisponible() {
-        val autorizado = sistema.autorizaPrestamo(usuario.id, libro1.isbn)
+        val autorizado = prestamos.autorizaPrestamo(usuario.id, libro1.isbn)
         assertTrue(autorizado)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     @Test
     fun devolverLibroLoMarcaComoDisponibleOtraVez() {
-        sistema.prestarLibro(libro1, usuario)
-        sistema.devolverLibro(libro1, usuario)
-
+        prestamos.prestarLibro(libro1, usuario)
+        prestamos.devolverLibro(libro1, usuario)
         assertTrue(libro1.disponible)
     }
 
     @Test
     fun mostrarLibrosDisponiblesSoloMuestraNoPrestados() {
-        sistema.prestarLibro(libro1, usuario)
+        prestamos.prestarLibro(libro1, usuario)
         val disponibles = biblioteca.libros.filter { it.disponible }
-        assertTrue(disponibles.containsAll(listOf(libro2, libro3, libro4)) && !disponibles.contains(libro1))
+        assertTrue(disponibles.containsAll(listOf(libro2, libro3, libro4)))
+        assertFalse(disponibles.contains(libro1))
     }
 
     @Test
     fun mostrarLibrosEnPrestamoSoloMuestraPrestados() {
-        sistema.prestarLibro(libro2, usuario)
+        prestamos.prestarLibro(libro2, usuario)
         val enPrestamo = biblioteca.libros.filter { !it.disponible }
         assertTrue(enPrestamo.contains(libro2))
         assertFalse(enPrestamo.contains(libro1))

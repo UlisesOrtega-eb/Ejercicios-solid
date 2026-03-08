@@ -10,24 +10,24 @@ data class Reservation (
     val room: Room,
     val guest: Guest,
     val dateRange: DateRange,
-    val total: Double,
+    val totalCost: Double,
     var status: ReservationStatus,
     val createdAt: LocalDate
 ){
-    companion object{
+    companion object {
         @RequiresApi(Build.VERSION_CODES.O)
         fun create(
             room: Room,
             guest: Guest,
             dateRange: DateRange,
-            total: Double
-        ): Reservation{
+            totalCost: Double
+        ): Reservation {
             return Reservation(
                 id = UUID.randomUUID().toString(),
-                room =room,
-                guest =guest,
-                dateRange =dateRange,
-                total =total,
+                room = room,
+                guest = guest,
+                dateRange = dateRange,
+                totalCost = totalCost,
                 status = ReservationStatus.CONFIRMED,
                 createdAt = LocalDate.now()
             )

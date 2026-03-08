@@ -37,20 +37,20 @@ class ReservationSystem(
         return ReservationResult(
             success = true,
             reservation = reservation,
-            message = "Reserva creada exitosamente"
+            message = "Reservation created successfully"
         )
     }
 
     override fun cancelReservation(reservationId: String): CancellationResult {
         val reservation = repository.findById(reservationId)
-            ?: return CancellationResult(false, "Reserva no encontrada")
+            ?: return CancellationResult(false, "Reservation not found")
 
         if (reservation.status == ReservationStatus.CANCELLED) {
-            return CancellationResult(false, "La reserva ya está cancelada")
+            return CancellationResult(false, "Reservation is already cancelled")
         }
 
         if (reservation.status == ReservationStatus.COMPLETED) {
-            return CancellationResult(false, "No se puede cancelar una reserva completada")
+            return CancellationResult(false, "Cannot cancel a completed reservation")
         }
 
         // Actualizar estado
@@ -60,19 +60,19 @@ class ReservationSystem(
         // Liberar habitación
         inventoryManager.markAsAvailable(reservation.room)
 
-        return CancellationResult(true, "Reserva cancelada exitosamente")
+        return CancellationResult(true, "Reservation cancelled successfully")
     }
 
     override fun findReservation(id: String): Reservation? {
         return repository.findById(id)
     }
 
-    override fun getGuestReservations(guestId: Int): List<Reservation> {
-        return repository.findByGuest(guestId)
+    override fun findReservationsByGuestId(guestId: String): List<Reservation> {
+        return repository.findByGuestId(guestId)
     }
 
-    override fun getRoomReservations(roomNumber: String): List<Reservation> {
-        return repository.findByRoom(roomNumber)
+    override fun findReservationsByRoomNumber(roomNumber: String): List<Reservation> {
+        return repository.findByRoomNumber(roomNumber)
     }
 
     // Métodos adicionales útiles

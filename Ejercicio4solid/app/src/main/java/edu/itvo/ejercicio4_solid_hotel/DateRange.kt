@@ -12,7 +12,7 @@ data class DateRange (
 ){
     init {
         require(checkOut.isAfter(checkIn)){
-            "la fecha de salida debe ser posterior a la fecha de entrada"
+            "Check-out date must be after check-in date"
         }
     }
 
